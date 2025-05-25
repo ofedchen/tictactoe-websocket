@@ -42,7 +42,7 @@ function createBoard() {
 
     currentPlayer = players[0];
     console.log(currentPlayer);
-    gameMessage.textContent = 'Current turn: ' + currentPlayer.name;
+    gameMessage.textContent = `Nu är det ${currentPlayer.name}s tur`;
     resetButton.style.display = 'block';
 
     if (myUser === players[0].name && !gameCreated){
@@ -66,7 +66,7 @@ function updateBoard(index) {
 
     const winPattern = checkWin();
     if (winPattern) {
-        gameMessage.textContent = `Player ${currentPlayer.name} wins!`;
+        gameMessage.textContent = `Spelare ${currentPlayer.name} har vunnit!`;
         gameActive = false;
 
         if (myUser === currentPlayer.name)
@@ -81,7 +81,7 @@ function updateBoard(index) {
     }
 
     if (cells.every(cell => cell !== null)) {
-        gameMessage.textContent = "It's a draw!";
+        gameMessage.textContent = "Ingen vann";
         gameActive = false;
         if (myUser === players[0].name)
             socket.emit('matchEnd', gameName);
@@ -89,7 +89,7 @@ function updateBoard(index) {
     }
 
     currentPlayer = currentPlayer.symbol === "X" ? players[1] : players[0];
-    gameMessage.textContent = `Current Turn: ${currentPlayer.name}`;
+    gameMessage.textContent = `Nu är det ${currentPlayer.name}s tur`;
 }
 
 
@@ -156,7 +156,7 @@ socket.on('newPlayer', function (player) {
     console.log(players);
     // let index = players.length;
     let item = document.createElement('li');
-    item.textContent = 'Player ' + gameSymbol + ': ' + player;
+    item.textContent = 'Spelare ' + gameSymbol + ': ' + player;
     playerList.appendChild(item);
     playersDiv.style.display = 'block';
 
@@ -184,6 +184,6 @@ socket.on('newMove', (index) => {
 socket.on('resetBoard', () => {
     cells = Array(9).fill(null);
     gameActive = true;
-    gameMessage.textContent = `Current Turn: ${currentPlayer}`;
+    gameMessage.textContent = `Nu är det ${currentPlayer.name}s tur`;
     createBoard();
 });

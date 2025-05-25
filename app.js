@@ -30,7 +30,7 @@ app.get("/messages", async (req, res) => {
     }
 });
 
-app.get("matches", async (req, res) => {
+app.get("/matches", async (req, res) => {
     try {
         const allMatches = await MatchModel.find();
         return res.status(200).json(allMatches);
