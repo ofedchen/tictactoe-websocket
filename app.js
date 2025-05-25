@@ -10,6 +10,7 @@ const port = 3000;
 // mongoose
 const MessageModel = require("./models/messageModel");
 const GameModel = require("./models/gameModel");
+const MatchModel = require('./models/matchModel')
 
 const connectionMongoDB = require('./connectionMongoDB');
 connectionMongoDB();
@@ -26,6 +27,18 @@ app.get("/messages", async (req, res) => {
         return res.status(500).json({
             error: error.message
         });
+    }
+});
+
+app.get("matchs", async (req, res) => {
+    try {
+        const allMatches = await MatchModel.find();
+        return res.status(200).json(allMatches);
+    }
+    catch (error) {
+        return res.status(500).json({
+            error: error.message
+        })
     }
 });
 
@@ -50,13 +63,15 @@ io.on('connection', (socket) => {
 
     socket.on('game', game => {
         console.log(game)
-        const newGame = new GameModel({players: game.players, winner: game.winner});
+        const newGame = new GameModel({ players: game.players, winner: game.winner });
         const currentGame = newGame.save();
         // console.log(currentGame._id.toString());
     })
 
     socket.on('player', player => {
         console.log('got new player');
+
+        const newPlayer = 
         io.emit('newPlayer', player);
     });
 
