@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+        }
+
+        input {
+            margin: 10px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+            justify-content: center;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #333;
+            cursor: pointer;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+        }
+
+        li {
+            text-align: left;
+        }
+
+        #players {
+            grid-row: 2;
+        }
+
+        #playersList > li {
+            list-style: none;
+            text-align: center;
+        }
+
+        #game {
+            grid-row: span 3;
+        }
+
+        #reset {
+            margin-inline: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Play and chat</h1>
+    <main>
+    <div id="user">
+        <div id="userContainer"></div>
+        <form id="formUser">
+            <input type="text" id="inputUser"><button>Skriv in ditt namn</button>
+        </form>
+    </div>
+    <div id="players" style="display: none;">
+        <h2>Players</h2>
+        <ul id="playerList"></ul>
+    </div>
+    <div id="game">
+        <h2>Tic Tac Toe</h2>
+        <div class="board" id="board"></div>
+        <div class="status" id="gameMessage"></div>
+        <button id="reset" style="display: none;">Reset</button>
+    </div>
+
+    <div id="message" style="display: none;">
+        <form id="formMessage">
+            <input type="text" id="inputMessage"><button>Skicka ett meddelande</button>
+        </form>
+        <h2>Chat meddelanden</h2>
+        <ul id="messages"></ul>
+    </div>
+    </main>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+
+</html>
