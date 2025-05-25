@@ -4,6 +4,9 @@ const formUser = document.querySelector('#formUser');
 const inputUser = document.querySelector('#inputUser');
 const userContainer = document.querySelector('#userContainer');
 
+const formGame = document.querySelector('#formGame');
+const inputGameName = document.querySelector('#gameName');
+
 const formMessage = document.querySelector('#formMessage');
 const inputMessage = document.querySelector('#inputMessage');
 const messages = document.querySelector("#messages");
@@ -16,11 +19,13 @@ const gameMessage = document.getElementById("gameMessage");
 const resetButton = document.querySelector("#reset");
 
 let myUser;
+let gameName;
 let players = [];
 let currentPlayer;
 let cells = Array(9).fill(null);
 let gameActive = true;
 let gameIndex;
+let counter = 0;
 
 
 function createBoard() {
@@ -108,6 +113,15 @@ formUser.addEventListener("submit", (e) => {
     socket.emit('player', myUser);
 })
 
+formGame.addEventListener("submit", (e) => {
+    e.preventDefault();
+    gameName = inputGameName.value;
+    console.log(gameName);
+    formGame.style.display = "none";
+
+    socket.emit('gameCreated', gameName);
+})
+
 resetButton.addEventListener("click", () => {
     socket.emit('boardReset');
 });
@@ -120,6 +134,7 @@ formMessage.addEventListener('submit', function (e) {
         inputMessage.value = '';
     }
 });
+
 
 socket.on('newChatMessage', function (msg) {
     let item = document.createElement('li');
@@ -138,8 +153,21 @@ socket.on('newPlayer', function (player) {
     playersDiv.style.display = 'block';
 
     if (players.length === 2)
-        createBoard();
+        // createBoard();
+        formGame.style.display = "block";
+
 });
+
+socket.on('newGameCreated', gameName => {
+    counter += 1;
+    console.log(counter)
+    inputGameName.value = gameName;
+    document.getElementById('newGameName').textContent = gameName;
+
+    if (counter === 2) {
+        createBoard();
+    }
+})
 
 socket.on('newMove', (index) => {
     updateBoard(index);

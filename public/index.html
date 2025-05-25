@@ -78,10 +78,10 @@
     <div id="user">
         <div id="userContainer"></div>
         <form id="formUser">
-            <input type="text" id="inputUser"><button>Skriv in ditt namn</button>
+            <input type="text" id="inputUser" required><button>Skriv in ditt namn</button>
         </form>
-        <form action="" id="formGame">
-            <input type="text" id="gameName" required>
+        <form action="" id="formGame" style="display: none;">
+            <input type="text" id="gameName" required placeholder="Namnge ditt spel"><button>Gå med</button>
         </form>
     </div>
     <div id="players" style="display: none;">
@@ -89,7 +89,7 @@
         <ul id="playerList"></ul>
     </div>
     <div id="game">
-        <h2>Tic Tac Toe</h2>
+        <h2 id="newGameName">Tic Tac Toe</h2>
         <div class="board" id="board"></div>
         <div class="status" id="gameMessage"></div>
         <button id="reset" style="display: none;">Reset</button>

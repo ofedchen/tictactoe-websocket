@@ -61,19 +61,22 @@ io.on('connection', (socket) => {
         newMessage.save();
     });
 
+    socket.on('player', player => {
+        console.log('got new player');
+        io.emit('newPlayer', player);
+    });
+
+    socket.on('gameCreated', gameName => {
+        console.log(gameName);
+        io.emit('newGameCreated', gameName);
+    })
+
     socket.on('game', game => {
         console.log(game)
         const newGame = new GameModel({ players: game.players, winner: game.winner });
         const currentGame = newGame.save();
         // console.log(currentGame._id.toString());
     })
-
-    socket.on('player', player => {
-        console.log('got new player');
-
-        const newPlayer = 
-        io.emit('newPlayer', player);
-    });
 
     socket.on('move', index => {
         console.log('cell ', index);
