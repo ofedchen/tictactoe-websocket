@@ -9,7 +9,7 @@ const port = 3000;
 
 // mongoose
 const MessageModel = require("./models/messageModel");
-const GameModel = require("./models/gameModel");
+// const GameModel = require("./models/gameModel");
 const MatchModel = require('./models/matchModel')
 
 const connectionMongoDB = require('./connectionMongoDB');
@@ -30,7 +30,7 @@ app.get("/messages", async (req, res) => {
     }
 });
 
-app.get("matchs", async (req, res) => {
+app.get("matches", async (req, res) => {
     try {
         const allMatches = await MatchModel.find();
         return res.status(200).json(allMatches);
@@ -71,11 +71,11 @@ io.on('connection', (socket) => {
         io.emit('newGameCreated', gameName);
     })
 
-    socket.on('game', game => {
+    socket.on('match', async (game) => {
         console.log(game)
-        const newGame = new GameModel({ players: game.players, winner: game.winner });
-        const currentGame = newGame.save();
-        // console.log(currentGame._id.toString());
+        // add get to check if the gameName is unique or get the id?
+        const newMatch = new MatchModel({ gameName: game.gameName, player1: { name: game.player1 }, player2: { name: game.player2 } });
+        newMatch.save();
     })
 
     socket.on('move', index => {
@@ -83,10 +83,44 @@ io.on('connection', (socket) => {
         io.emit('newMove', index);
     });
 
+    socket.on('matchUpdate', async (win) => {
+        const match = await MatchModel.findOne({ gameName: win.gameName });
+
+        if (!match) return;
+
+        let updatePath;
+        if (match.player1.name === win.name) {
+            updatePath = "player1.wins";
+        } else if (match.player2.name === win.name) {
+            updatePath = "player2.wins";
+        } else {
+            return;
+        }
+
+        await MatchModel.updateOne(
+            { gameName: win.gameName },
+            { $inc: { [updatePath]: 1, numberOfGames: 1 } }
+        );
+    });
+
+    socket.on('matchEnd', async (gameName) => {
+        console.log(gameName)
+        try {
+            await MatchModel.findOneAndUpdate(
+                { gameName },
+                { $inc: { numberOfGames: 1 } }
+            );
+        } catch (err) {
+            console.error(`Failed to update numberOfGames for ${gameName}:`, err);
+        }
+    });
+
     socket.on('boardReset', () => {
         io.emit('resetBoard');
     });
+
 });
+
 
 server.listen(port, () => {
     console.log(`Socket.IO server running at http://localhost:${port}/`);

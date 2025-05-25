@@ -26,6 +26,7 @@ let cells = Array(9).fill(null);
 let gameActive = true;
 let gameIndex;
 let counter = 0;
+let gameCreated = false;
 
 
 function createBoard() {
@@ -43,6 +44,11 @@ function createBoard() {
     console.log(currentPlayer);
     gameMessage.textContent = 'Current turn: ' + currentPlayer.name;
     resetButton.style.display = 'block';
+
+    if (myUser === players[0].name && !gameCreated){
+        socket.emit('match', { gameName: gameName, player1: players[0].name, player2: players[1].name })
+        gameCreated = true;
+    }
 }
 
 
@@ -64,7 +70,7 @@ function updateBoard(index) {
         gameActive = false;
 
         if (myUser === currentPlayer.name)
-            socket.emit('game', { players: [players[0].name, players[1].name], winner: currentPlayer.name });
+            socket.emit('matchUpdate', { gameName: gameName, name: myUser });
 
         // Highlight winning cells
         winPattern.forEach(i => {
@@ -77,6 +83,8 @@ function updateBoard(index) {
     if (cells.every(cell => cell !== null)) {
         gameMessage.textContent = "It's a draw!";
         gameActive = false;
+        if (myUser === players[0].name)
+            socket.emit('matchEnd', gameName);
         return;
     }
 
@@ -146,9 +154,9 @@ socket.on('newPlayer', function (player) {
     const gameSymbol = players.length ? 'O' : 'X';
     players.push({ name: player, symbol: gameSymbol });
     console.log(players);
-    let index = players.length;
+    // let index = players.length;
     let item = document.createElement('li');
-    item.textContent = 'Player ' + index + ': ' + player;
+    item.textContent = 'Player ' + gameSymbol + ': ' + player;
     playerList.appendChild(item);
     playersDiv.style.display = 'block';
 
